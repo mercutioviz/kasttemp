@@ -1,0 +1,4 @@
+output_directory: output
+report_directory: reports
+nikto_timeout: 300  # Example timeout in seconds for Nikto
+# Add other default settings here as needed
