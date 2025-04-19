@@ -72,7 +72,7 @@ def main():
         dest="report_directory",
         help="Directory to save reports (overrides config)",
     )
-     parser.add_argument(
+    parser.add_argument(
         "--log-dir",
         dest="log_directory",
         help="Directory to save logs (overrides config)",
