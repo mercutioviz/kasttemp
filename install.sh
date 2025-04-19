@@ -35,11 +35,16 @@ python3 -m venv "$INSTALL_DIR/.venv"
 echo "Creating requirements.txt"
 cat > "$INSTALL_DIR/requirements.txt" <<EOL
 PyYAML
+colorlog
 EOL
 
 # Install the dependencies
 echo "Installing dependencies using pip..."
 "$INSTALL_DIR/.venv/bin/pip" install -r "$INSTALL_DIR/requirements.txt"
+
+# Create the log directory
+echo "Creating log directory in $INSTALL_DIR"
+mkdir -p "$INSTALL_DIR/logs"
 
 # Create the wrapper script
 echo "Creating wrapper script in /usr/local/bin/kast"
@@ -49,6 +54,23 @@ cat > "/usr/local/bin/kast" <<EOL
 
 # Activate the virtual environment
 source "$INSTALL_DIR/.venv/bin/activate"
+
+# Set up logging
+LOG_DIR="$INSTALL_DIR/logs"
+TARGET_DOMAIN="" #Will be overwritten
+DATE_TIME=$(date "+%y%m%d-%H%M%S")
+LOG_FILE="\$LOG_DIR/kast-\$TARGET_DOMAIN-\$DATE_TIME.log"
+
+#check if target domain was supplied
+if [ "\$1" != "" ]; then
+  # Extract the domain from the URL
+  TARGET_DOMAIN=$(echo "\$1" | sed -E 's/https?:\/\/(www\.)?//; s/\/.*//')
+  LOG_FILE="\$LOG_DIR/kast-\$TARGET_DOMAIN-\$DATE_TIME.log"
+else
+  LOG_FILE="\$LOG_DIR/kast-default-\$DATE_TIME.log"
+fi
+
+export KAST_LOG_FILE="\$LOG_FILE"
 
 # Execute cli.py with any provided arguments
 python3 "$INSTALL_DIR/cli.py" "\$@"
